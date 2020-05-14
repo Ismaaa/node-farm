@@ -29,6 +29,26 @@ const url = require("url");
 // });
 // console.log('Will read file!');
 
+/////////////////////////////////////////////////////////
+// SERVER
+
+const replaceTemplate = (template, product) => {
+  // with the /{%NAME%}/g we make the replace global and it will replace all occurrences
+  let output = template
+    .replace(/{%ID%}/g, product.id)
+    .replace(/{%NAME%}/g, product.name)
+    .replace(/{%IMAGE%}/g, product.image)
+    .replace(/{%FROM%}/g, product.from)
+    .replace(/{%NUTRIENTS%}/g, product.nutrients)
+    .replace(/{%QUANTITY%}/g, product.quantity)
+    .replace(/{%PRICE%}/g, product.price)
+    .replace(/{%DESCRIPTION%}/g, product.image);
+
+  if (!product.organic) otuput = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+
+  return output;
+};
+
 const card = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
 const overview = fs.readFileSync(
   `${__dirname}/templates/overview.html`,
@@ -37,6 +57,7 @@ const overview = fs.readFileSync(
 const product = fs.readFileSync(`${__dirname}/templates/product.html`, "utf-8");
 
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const jsonData = JSON.parse(data);
 
 const server = http.createServer((req, res) => {
   const pathName = req.url;
@@ -46,7 +67,11 @@ const server = http.createServer((req, res) => {
     res.writeHead(404, {
       "Content-type": "text/html",
     });
-    res.end(overview);
+
+    const cards = jsonData.map((item) => replaceTemplate(card, item)).join('');
+    const output = overview.replace('{%PRODUCT_CARDS%}', cards);
+
+    res.end(output);
 
     // Product page
   } else if (pathName === "/product") {
