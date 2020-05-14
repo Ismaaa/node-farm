@@ -32,6 +32,7 @@ const url = require("url");
 /////////////////////////////////////////////////////////
 // SERVER
 
+// Replaces vars in a template
 const replaceTemplate = (template, product) => {
   // with the /{%NAME%}/g we make the replace global and it will replace all occurrences
   let output = template
@@ -44,11 +45,18 @@ const replaceTemplate = (template, product) => {
     .replace(/{%PRICE%}/g, product.price)
     .replace(/{%DESCRIPTION%}/g, product.image);
 
-  if (!product.organic) otuput = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+  // Add non-organic class when prop organic is false
+  if (!product.organic)
+    otuput = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
 
   return output;
 };
 
+/** Load data */
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const jsonData = JSON.parse(data);
+
+/** Load templates */
 const card = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
 const overview = fs.readFileSync(
   `${__dirname}/templates/overview.html`,
@@ -56,9 +64,7 @@ const overview = fs.readFileSync(
 );
 const product = fs.readFileSync(`${__dirname}/templates/product.html`, "utf-8");
 
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
-const jsonData = JSON.parse(data);
-
+/** Server - Everything inside this function will run on every request */
 const server = http.createServer((req, res) => {
   const pathName = req.url;
 
@@ -68,8 +74,12 @@ const server = http.createServer((req, res) => {
       "Content-type": "text/html",
     });
 
-    const cards = jsonData.map((item) => replaceTemplate(card, item)).join('');
-    const output = overview.replace('{%PRODUCT_CARDS%}', cards);
+
+    // Replace all vars in all cards and join result so we can print it to the html
+    const cards = jsonData.map((item) => replaceTemplate(card, item)).join("");
+
+    // Replace cards placeholder for the partial
+    const output = overview.replace("{%PRODUCT_CARDS%}", cards);
 
     res.end(output);
 
