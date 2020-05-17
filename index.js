@@ -66,10 +66,10 @@ const product = fs.readFileSync(`${__dirname}/templates/product.html`, "utf-8");
 
 /** Server - Everything inside this function will run on every request */
 const server = http.createServer((req, res) => {
-  const pathName = req.url;
+  const { query, pathname } = url.parse(req.url);  
 
   // Overview page
-  if (pathName === "/" || pathName === "/overview") {
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(404, {
       "Content-type": "text/html",
     });
@@ -84,14 +84,14 @@ const server = http.createServer((req, res) => {
     res.end(output);
 
     // Product page
-  } else if (pathName === "/product") {
+  } else if (pathname === "/product") {
     res.writeHead(404, {
       "Content-type": "text/html",
     });
     res.end(product);
 
     // Api
-  } else if (pathName === "/api") {
+  } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-type": "application/json",
     });
