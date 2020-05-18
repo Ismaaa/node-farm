@@ -57,16 +57,19 @@ const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const jsonData = JSON.parse(data);
 
 /** Load templates */
-const card = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
-const overview = fs.readFileSync(
+const cardView = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
+const overviewView = fs.readFileSync(
   `${__dirname}/templates/overview.html`,
   "utf-8"
 );
-const product = fs.readFileSync(`${__dirname}/templates/product.html`, "utf-8");
+const productView = fs.readFileSync(
+  `${__dirname}/templates/product.html`,
+  "utf-8"
+);
 
 /** Server - Everything inside this function will run on every request */
 const server = http.createServer((req, res) => {
-  const { query, pathname } = url.parse(req.url);  
+  const { query, pathname } = url.parse(req.url, true);
 
   // Overview page
   if (pathname === "/" || pathname === "/overview") {
@@ -74,21 +77,26 @@ const server = http.createServer((req, res) => {
       "Content-type": "text/html",
     });
 
-
     // Replace all vars in all cards and join result so we can print it to the html
-    const cards = jsonData.map((item) => replaceTemplate(card, item)).join("");
+    const cards = jsonData
+      .map((item) => replaceTemplate(cardView, item))
+      .join("");
 
     // Replace cards placeholder for the partial
-    const output = overview.replace("{%PRODUCT_CARDS%}", cards);
+    const output = overviewView.replace("{%PRODUCT_CARDS%}", cards);
 
     res.end(output);
 
     // Product page
   } else if (pathname === "/product") {
+    const product = jsonData[query.id];
+
+    const output = replaceTemplate(productView, product);
+
     res.writeHead(404, {
       "Content-type": "text/html",
     });
-    res.end(product);
+    res.end(output);
 
     // Api
   } else if (pathname === "/api") {
