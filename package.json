@@ -7,6 +7,7 @@
   "author": "Ismaaa",
   "license": "MIT",
   "dependencies": {
+    "nodemon": "^2.0.4",
     "slugify": "^1.4.0"
   }
 }
