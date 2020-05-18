@@ -1,6 +1,7 @@
 const fs = require("fs");
 const http = require("http");
 const url = require("url");
+const slugify = require("slugify");
 
 const replaceTemplate = require("./modules/replaceTemplate");
 
@@ -37,6 +38,9 @@ const replaceTemplate = require("./modules/replaceTemplate");
 /** Load data */
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const jsonData = JSON.parse(data);
+const slugs = jsonData.map((item) => slugify(item.name, { lower: true }));
+
+console.log(slugs);
 
 /** Load templates */
 const cardView = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
