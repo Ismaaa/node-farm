@@ -43,11 +43,11 @@ const replaceTemplate = (template, product) => {
     .replace(/{%NUTRIENTS%}/g, product.nutrients)
     .replace(/{%QUANTITY%}/g, product.quantity)
     .replace(/{%PRICE%}/g, product.price)
-    .replace(/{%DESCRIPTION%}/g, product.image);
+    .replace(/{%DESCRIPTION%}/g, product.description);
 
   // Add non-organic class when prop organic is false
   if (!product.organic)
-    otuput = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
 
   return output;
 };
