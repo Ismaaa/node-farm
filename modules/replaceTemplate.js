@@ -13,7 +13,7 @@ module.exports = (template, product) => {
 
   // Add non-organic class when prop organic is false
   if (!product.organic)
-    output = output.replace(/{%NOT_ORGANIC%}/g, 'not-organic');
+    output = output.replace(/{%NOT_ORGANIC%}/g, "not-organic");
 
   return output;
 };

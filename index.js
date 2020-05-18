@@ -1,12 +1,11 @@
-const fs = require('fs');
-const http = require('http');
-const url = require('url');
-const slugify = require('slugify');
+const fs = require("fs");
+const http = require("http");
+const url = require("url");
+const slugify = require("slugify");
 
-const replaceTemplate = require('./modules/replaceTemplate');
+const replaceTemplate = require("./modules/replaceTemplate");
 
-/////////////////////////////////
-// FILES
+/** FILES */
 
 // Blocking, synchronous way
 // const textIn = fs.readFileSync('./txt/input.txt', 'utf-8');
@@ -32,21 +31,21 @@ const replaceTemplate = require('./modules/replaceTemplate');
 // });
 // console.log('Will read file!');
 
-/////////////////////////////////////////////////////////
-// SERVER
+/** SERVER */
 
 /** Load data */
-const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, 'utf-8');
+const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
+const jsonData = JSON.parse(data);
 
 /** Load templates */
-const cardView = fs.readFileSync(`${__dirname}/templates/card.html`, 'utf-8');
+const cardView = fs.readFileSync(`${__dirname}/templates/card.html`, "utf-8");
 const overviewView = fs.readFileSync(
   `${__dirname}/templates/overview.html`,
-  'utf-8'
+  "utf-8"
 );
 const productView = fs.readFileSync(
   `${__dirname}/templates/product.html`,
-  'utf-8'
+  "utf-8"
 );
 
 /** Server - Everything inside this function will run on every request */
@@ -54,48 +53,48 @@ const server = http.createServer((req, res) => {
   const { query, pathname } = url.parse(req.url, true);
 
   // Overview page
-  if (pathname === '/' || pathname === '/overview') {
+  if (pathname === "/" || pathname === "/overview") {
     res.writeHead(404, {
-      'Content-type': 'text/html',
+      "Content-type": "text/html",
     });
 
     // Replace all vars in all cards and join result so we can print it to the html
     const cards = jsonData
       .map((item) => replaceTemplate(cardView, item))
-      .join('');
+      .join("");
 
     // Replace cards placeholder for the partial
-    const output = overviewView.replace('{%PRODUCT_CARDS%}', cards);
+    const output = overviewView.replace("{%PRODUCT_CARDS%}", cards);
 
     res.end(output);
 
     // Product page
-  } else if (pathname === '/product') {
+  } else if (pathname === "/product") {
     const product = jsonData[query.id];
 
     const output = replaceTemplate(productView, product);
 
     res.writeHead(404, {
-      'Content-type': 'text/html',
+      "Content-type": "text/html",
     });
     res.end(output);
 
     // Api
-  } else if (pathname === '/api') {
+  } else if (pathname === "/api") {
     res.writeHead(200, {
-      'Content-type': 'application/json',
+      "Content-type": "application/json",
     });
     res.end(data);
 
     // 404
   } else {
     res.writeHead(404, {
-      'Content-type': 'text/html',
+      "Content-type": "text/html",
     });
-    res.end('<h1>Page not found !</h1>');
+    res.end("<h1>Page not found !</h1>");
   }
 });
 
-server.listen(8080, '127.0.0.1', () => {
-  console.log('Listening on port 8080');
+server.listen(8080, "127.0.0.1", () => {
+  console.log("Listening on port 8080");
 });
