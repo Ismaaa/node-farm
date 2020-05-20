@@ -48,6 +48,7 @@ app.get("/", (req, res) => {
   // Replace cards placeholder for the partial
   const output = overviewView.replace("{%PRODUCT_CARDS%}", cards);
 
+  res.set("Cache-Control", "public, max-age=31557600, s-maxage=31557600");
   res.send(output);
 });
 app.get("/overview", (req, res) => {
@@ -59,17 +60,20 @@ app.get("/overview", (req, res) => {
   // Replace cards placeholder for the partial
   const output = overviewView.replace("{%PRODUCT_CARDS%}", cards);
 
+  res.set("Cache-Control", "public, max-age=31557600, s-maxage=31557600");
   res.send(output);
 });
 
 app.get("/product/:id", (req, res) => {
   const product = jsonData[parseInt(req.params.id, 10)];
-
   const output = replaceTemplate(productView, product);
+
+  res.set("Cache-Control", "public, max-age=31557600, s-maxage=31557600");
   res.send(output);
 });
 
 app.get("/api", (req, res) => {
+  res.set("Cache-Control", "public, max-age=31557600, s-maxage=31557600");
   res.send(data);
 });
 
